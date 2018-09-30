@@ -8,7 +8,7 @@ Redesigned CTFd template for [UIKit](https://getuikit.com). Colors are based off
 
 ## Installation
 * Copy `stormctf/` into your `CTFd/CTFd/themes` folder.
-* Copy `plugins/challenges/assets/normal-challenge-modal.njk` to `CTFd/CTFd/plugins/challenges/assets/normal-challenge-modal.njk`
+* Copy `plugins/challenges/assets/standard-challenge-modal.njk` to `CTFd/CTFd/plugins/challenges/assets/standard-challenge-modal.njk`
   * **THIS WILL OVERWRITE THE ORIGINAL. MAKE A BACKUP.**
 
 ### TO DO:
