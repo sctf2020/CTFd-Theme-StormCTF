@@ -15,3 +15,5 @@ Redesigned CTFd template for [UIKit](https://getuikit.com). Colors are based off
 - [ ] Create njk's for different challenge types.
 - [ ] Maybe redo the Graphs?
 - [x] Wait for @ColdHeat to update to 2.0 so I can fix this all over again :stuck_out_tongue:
+
+![Theme Image](https://github.com/stormctf/CTFd-Theme-StormCTF/blob/master/CTFd-Theme-StormCTF.png)
