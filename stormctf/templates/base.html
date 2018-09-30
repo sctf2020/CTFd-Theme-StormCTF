@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ ctf_name() }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/css/vendor/uikit.css"> {% block stylesheets %}{% endblock %} {% for stylesheet in get_registered_stylesheets() %} {% if stylesheet.startswith('http') %}
+    <link rel="stylesheet" type="text/css" href="{{ stylesheet }}"> {% elif request.script_root %}
+    <link rel="stylesheet" type="text/css" href="{{ request.script_root }}/{{ stylesheet }}"> {% else %}
+    <link rel="stylesheet" type="text/css" href="{{ stylesheet }}"> {% endif %} {% endfor %}
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/nunjucks.min.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/moment.min.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/uikit.min.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/uikit-icons.min.js"></script>
+    <script type="text/javascript">
+    var script_root = "{{ request.script_root }}";
+    </script>
+</head>
+
+<body>
+    <div class="tm-header-mobile uk-hidden@m">
+        <nav class="uk-navbar-container" uk-navbar>
+            <div class="uk-navbar-left">
+                <a class="uk-navbar-toggle" href="#tm-mobile" uk-toggle>
+                    <div uk-navbar-toggle-icon></div>
+                    <span class="uk-margin-small-left">Menu</span>
+                </a>
+            </div>
+            <div class="uk-navbar-center">
+                <a class="uk-navbar-item uk-logo" href="{{ request.script_root }}/">
+                {% if ctf_logo() %}
+                <img data-src="{{ request.script_root }}/files/{{ ctf_logo() }}" width="100" alt="{{ ctf_name() }}" uk-img>
+                {% else %}
+                {{ ctf_name() }}
+                {% endif %}</a>
+            </div>
+        </nav>
+        <div id="tm-mobile" class="uk-modal-full" uk-modal>
+            <div class="uk-modal-dialog uk-background-muted uk-modal-body uk-text-center uk-height-viewport">
+                <button class="uk-modal-close-full" type="button" uk-close></button>
+                <div class="uk-child-width-1-1" uk-grid>
+                    <div>
+                        <div class="uk-panel" id="module-0">
+                            <ul class="uk-nav uk-nav-default uk-nav-center">
+                                <li>
+                                    <a href="{{ request.script_root }}/">Home</a>
+                                </li>
+                                {% for page in get_user_page_menu_bar() %} {% if page.route.startswith('http://') or page.route.startswith('https://') %}
+                                <li>
+                                    <a href="{{ page.route }}">{{ page.title }}</a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    {% if request.script_root %} {% set route = request.script_root + '/' + page.route %} {% else %} {% set route = '/' + page.route %} {% endif %}
+                                    <a href="{{ route }}">{{ page.title }}</a>
+                                </li>
+                                {% endif %} {% endfor %} {% if not get_config('workshop_mode') %}
+                                <li>
+                                    <a href="{{ request.script_root }}/teams">Teams</a>
+                                </li>
+                                {% endif %} {% if not hide_scores() %}
+                                <li>
+                                    <a href="{{ request.script_root }}/scoreboard">Scoreboard</a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ request.script_root }}/challenges">Challenges</a>
+                                </li>
+                                {% if username is defined %} {% if admin %}
+                                <li>
+                                    <a href="{{ request.script_root }}/admin">Admin</a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ request.script_root }}/team">Team</a>
+                                </li>
+                                <li>
+                                    <a href="{{ request.script_root }}/profile">Profile</a>
+                                </li>
+                                <li>
+                                    <a href="{{ request.script_root }}/logout">Logout</a>
+                                </li>
+                                {% else %} {% if can_register() %}
+                                <li>
+                                    <a href="{{ request.script_root }}/register">Register</a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ request.script_root }}/login">Login</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tm-header uk-visible@m" uk-header>
+        <div uk-sticky="show-on-up: true; top: 200; animation: uk-animation-fade;sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky;cls-inactive: uk-navbar-transparent uk-dark;">
+            <div id="base-navbars" class='uk-background-primary uk-preserve-color'>
+                <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+                    <div class="uk-container">
+                        <div class="uk-navbar-left">
+                            <a href="{{ request.script_root }}/" class="uk-navbar-item uk-logo">{% if ctf_logo() %}
+                        <img data-src="{{ request.script_root }}/files/{{ ctf_logo() }}" width="75" alt="{{ ctf_name() }}" uk-img>
+                {% else %}
+                {{ ctf_name() }}
+                {% endif %}</a>
+                            <ul class="uk-navbar-nav">
+                                {% for page in get_user_page_menu_bar() %} {% if page.route.startswith('http://') or page.route.startswith('https://') %}
+                                <li>
+                                    <a href="{{ page.route }}">{{ page.title }}</a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    {% if request.script_root %} {% set route = request.script_root + '/' + page.route %} {% else %} {% set route = '/' + page.route %} {% endif %}
+                                    <a href="{{ route }}">{{ page.title }}</a>
+                                </li>
+                                {% endif %} {% endfor %} {% if not get_config('workshop_mode') %}
+                                <li>
+                                    <a href="{{ request.script_root }}/teams">Teams</a>
+                                </li>
+                                {% endif %} {% if not hide_scores() %}
+                                <li>
+                                    <a href="{{ request.script_root }}/scoreboard">Scoreboard</a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ request.script_root }}/challenges">Challenges</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="uk-container">
+                        <div class="uk-navbar-right">
+                            <ul class="uk-navbar-nav">
+                                {% if username is defined %} {% if admin %}
+                                <li>
+                                    <a href="{{ request.script_root }}/admin">Admin</a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ request.script_root }}/team">Team</a>
+                                </li>
+                                <li>
+                                    <a href="{{ request.script_root }}/profile">Profile</a>
+                                </li>
+                                <li>
+                                    <a href="{{ request.script_root }}/logout">Logout</a>
+                                </li>
+                                {% else %} {% if can_register() %}
+                                <li>
+                                    <a href="{{ request.script_root }}/register">Register</a>
+                                </li>
+                                <li>
+                                    <div class="uk-navbar-item">
+                                        <div>|</div>
+                                    </div>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ request.script_root }}/login">Login</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <main role="main">
+        {% block content %} {% endblock %}
+    </main>
+    <footer>
+        <div class="uk-section uk-section-muted">
+            <div class="uk-container uk-container-medium uk-text-center">
+                <p class="uk-text-muted uk-text-small">Powered by <a target='_blank' href="https://ctfd.io">CTFd</a></p>
+                <p class="uk-text-muted uk-text-small">StormCTF theme by <a target='_blank' href="https://twitter.com/offsec_ginger">Stitch</a></p>
+                <a href="#" uk-totop uk-scroll></a>
+            </div>
+        </div>
+    </footer>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/jquery.min.js"></script>
+    <script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/markdown-it.min.js"></script>
+    {% block scripts %} {% endblock %} {% for script in get_registered_scripts() %} {% if script.startswith('http') %}
+    <script src="{{ script }}"></script>
+    {% elif request.script_root %}
+    <script src="{{ request.script_root }}/{{ script }}"></script>
+    {% else %}
+    <script src="{{ script }}"></script>
+    {% endif %} {% endfor %}
+</body>
+
+</html>

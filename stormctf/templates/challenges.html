@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block content %}
+<div class="uk-section-default">
+    <div class="uk-section uk-section-xlarge uk-light uk-background-cover" style="background-image: url({{ request.script_root }}/themes/{{ ctf_theme() }}/static/img/challenges.jpg)">
+        <div class="uk-container uk-container-medium uk-text-center">
+            <h1 class='uk-heading-primary'>Challenges</h1>
+        </div>
+    </div>
+</div>
+{% if infos %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container  uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for info in infos %}
+            <div class="uk-alert-primary" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ info }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %} {% if errors %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container  uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for error in errors %}
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ error }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %} {% if admin or not errors %}
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-large">
+        <div id='challenges-board'>
+            <div class="uk-text-center">
+                <div uk-spinner="ratio: 10"></div>
+            </div>
+        </div>
+        <input id="nonce" type="hidden" name="nonce" value="{{ nonce }}">
+        <div id="chal-window" uk-modal class='uk-modal'>
+        </div>
+    </div>
+</div>
+{% endif %} {% endblock %} {% block scripts %}
+<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/utils.js"></script>
+<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/multi-modal.js"></script>
+{% if admin or not errors %}
+<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/chalboard.js"></script>
+<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/ezq.js"></script>
+{% endif %}
+<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/style.js"></script>
+{% endblock %}

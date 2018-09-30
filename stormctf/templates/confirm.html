@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block stylesheets %} {% endblock %} {% block content %}
+<div class="uk-section-default">
+    <div class="uk-section uk-section-xlarge uk-light uk-background-cover" style="background-image: url({{ request.script_root }}/themes/{{ ctf_theme() }}/static/img/confirmation.png)">
+        <div class="uk-container uk-container-medium uk-text-center">
+            <h1 class='uk-heading-primary'>Email Confirmation</h1>
+        </div>
+    </div>
+</div>
+{% if infos %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container  uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for info in infos %}
+            <div class="uk-alert-primary" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ info }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %} {% if errors %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for error in errors %}
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ error }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-medium uk-text-center">
+            	{% if team %}
+                <h3 class="uk-text-center">We've sent a confirmation email to {{ team.email }}</h3>
+                {% endif %}
+                {% if username %}
+				<form method="POST" action="{{ request.script_root }}/confirm">
+					<h4 class="uk-text-center">
+						Need to resend the confirmation email?
+					</h4>
+					<div class="uk-text-center">
+						<button type="submit" id="submit" tabindex="5" class="uk-button uk-button-large uk-button-primary">Resend</button>
+					</div>
+					<input type="hidden" name="nonce" value="{{ nonce }}">
+				</form>
+				{% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

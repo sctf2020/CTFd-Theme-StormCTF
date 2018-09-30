@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% block stylesheets %} {% endblock %} {% block content %}
+<div class="uk-section uk-section-muted uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <h1 class='uk-heading-primary'>Profile</h1>
+    </div>
+</div>
+{% if success %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='success' class='uk-margin-top'>
+            <div class="uk-alert-success" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center"><strong>Success!</strong>
+					Your profile has been updated</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif errors %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for error in errors %}
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ error }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>{% endif %}
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-small"> {% if confirm_email %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a> Your email address isn't confirmed! Please check your email to confirm your email address.
+            <br>
+            <br> To have the confirmation email resent please <a href="{{ request.script_root }}/confirm">click
+					here.</a>
+        </div>
+        {% endif %}
+        <div class="uk-flex uk-flex-center">
+            <form class='uk-form-stacked' onsubmit="disable(submit)" action="" method="POST" novalidate>
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="name">
+                            Team Name
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="name" name="name" placeholder="Team Name" type="text" value="{{name}}">
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="email">
+                            Email Address
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="email" name="email" placeholder="Email" type="text" value="{{email}}">
+                    </div>
+                    <div class="uk-margin">
+                        <input class="uk-input uk-form-large uk-width-large@s" id="confirm-input" name="confirm" placeholder="Current Password" type="password" value="">
+                    </div>
+                    <div class="uk-margin">
+                        <input class="uk-input uk-form-large uk-width-large@s" id="password" name="password" placeholder="New Password" type="password" value="">
+                    </div>
+                    <hr class="uk-divider-icon">
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="affiliation-input">
+                            Affiliation
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="affiliation" name="affiliation" placeholder="Affiliation" type="text" value="{% if affiliation %}{{affiliation}}{% endif %}">
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="country-input">
+                            Website
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="website" name="website" placeholder="Website" type="text" value="{% if website %}{{website}}{% endif %}">
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="country-input">
+                            Country
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="country" name="country" placeholder="Country" type="text" value="{% if country %}{{country}}{% endif %}">
+                    </div>
+                    <div class="uk-margin uk-text-center">
+                        <input class="uk-button uk-button-large uk-button-primary uk-width-medium uk-margin-small-bottom" id="submit" name="submit" type="submit" value="Submit">
+                    </div>
+                    <input type="hidden" name="nonce" value="{{ nonce }}">
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+	<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/style.js"></script>
+    <script type="text/javascript">
+function disable(el) {
+    var oldLabel = el.value;
+    el.value = "Please Wait...";
+    el.disabled = true;
+}
+</script>
+{% endblock %}
