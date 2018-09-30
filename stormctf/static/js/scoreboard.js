@@ -29,7 +29,7 @@ function UTCtoDate(utc){
 }
 
 function scoregraph () {
-    $.get(script_root + '/top/5', function( data ) {
+    $.get(script_root + '/top/10', function( data ) {
         var places = $.parseJSON(JSON.stringify(data));
         places = places['places'];
         if (Object.keys(places).length === 0 ){
@@ -75,7 +75,7 @@ function scoregraph () {
         });
 
         var layout = {
-            title: 'Top 5 Teams',
+            title: 'Top 10 Teams',
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
             hovermode: 'closest',
