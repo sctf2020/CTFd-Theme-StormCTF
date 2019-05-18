@@ -1,58 +1,91 @@
-{% extends "base.html" %} {% block stylesheets %} {% endblock %} {% block content %}
-<div class="uk-section uk-section-muted uk-section-large">
-    <div class="uk-container uk-container-medium uk-text-center">
-        <h1 class='uk-heading-primary'>Setup</h1>
-    </div>
-</div>
-{% if errors %}
-<div class="uk-section-primary uk-preserve-color">
-    <div class="uk-container uk-container-medium uk-text-center">
-        <div id='errors' class='uk-margin-top'>
-            {% for error in errors %}
-            <div class="uk-alert-danger" uk-alert>
-                <a class="uk-alert-close" uk-close></a>
-                <h3 class="uk-text-center">{{ error }}</h3>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>{% endif %}
-<div class="uk-section uk-section-secondary">
-    <div class="uk-container uk-container-small">
-    	<div class='uk-flex uk-flex-center'>
-        <form class='uk-form-stacked' onsubmit="disable(submit)" action="" method="POST" novalidate>
-            <fieldset class="uk-fieldset">
-                <input type="hidden" name="nonce" value="{{ nonce }}">
-                {# This nonce is implemented specially in the route itself #}
-                <div class="uk-margin">
-                    <input class="uk-input uk-form-large uk-width-large@s" type="text" name="ctf_name" id="ctf_name-input" placeholder="CTF Name" />
-                </div>
-                <div class="uk-margin">
-                    <input class="uk-input uk-form-large uk-width-large@s" type="text" placeholder="Admin Username" name="name" id="username-input" />
-                </div>
-                <div class="uk-margin">
-                    <input class="uk-input uk-form-large uk-width-large@s" type="email" name="email" id="email-input" placeholder="Admin Email" />
-                </div>
-                <div class="uk-margin">
-                    <input class="uk-input uk-form-large uk-width-large@s" type="password" name="password" id="password-input" placeholder="Admin Password" />
-                </div>
-                <br />
-                <div class="uk-margin uk-text-center">
-                    <input class="uk-button uk-button-large uk-button-primary uk-width-medium uk-margin-small-bottom" id="submit" name="submit" type="submit" value="Submit">
-                </div>
-            </fieldset>
-        </form>
-    </div>
-    </div>
-</div>
+{% extends "base.html" %}
+
+{% block stylesheets %}
 {% endblock %}
+
+{% block content %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Setup</h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="col-md-6 offset-md-3">
+			<h2 class="text-center">CTF Settings</h2>
+			{% for error in errors %}
+				<div class="submit-row">
+					<div class="alert alert-danger alert-dismissable" role="alert">
+						<span class="sr-only">Error:</span>
+						{{ error }}
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+								aria-hidden="true">×</span></button>
+					</div>
+				</div>
+			{% endfor %}
+			<form method="post" accept-charset="utf-8" autocomplete="off" role="form" class="form-horizontal">
+				<input type="hidden" name="nonce" value="{{ nonce }}">
+				{# This nonce is implemented specially in the route itself #}
+				<div class="form-group">
+					<label>
+						CTF Name<br>
+						<small class="form-text text-muted">
+							Name for the CTF
+						</small>
+					</label>
+					<input class="form-control" type="text" name="ctf_name"/>
+				</div>
+				<div class="form-group">
+					<label>
+						Admin Username<br>
+						<small class="form-text text-muted">
+							Your username for the administration account
+						</small>
+					</label>
+					<input class="form-control" type="text" name="name"/>
+				</div>
+				<div class="form-group">
+					<label>
+						Admin Email<br>
+						<small class="form-text text-muted">
+							Your email address for the administration account
+						</small>
+					</label>
+					<input class="form-control" type="email" name="email"/>
+				</div>
+				<div class="form-group">
+					<label>
+						Admin Password<br>
+						<small class="form-text text-muted">
+							Your password for the administration account
+						</small>
+					</label>
+					<input class="form-control" type="password" name="password"/>
+				</div>
+				<div class="form-group">
+					<label>
+						CTF User Mode
+						<small class="form-text text-muted">
+							User Mode for the CTF. <br>
+							Dictates whether users join teams to play (Team Mode) or
+							play as themselves (User Mode)
+						</small>
+					</label>
+					<select class="form-control" name="user_mode">
+						<option value="teams">Team Mode</option>
+						<option value="users">User Mode</option>
+					</select>
+				</div>
+				<br/>
+				<div class="submit-row text-center">
+					<button type="submit" id="submit" tabindex="5" class="btn btn-md btn-primary btn-outlined">Submit
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+{% endblock %}
+
 {% block scripts %}
-<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/style.js"></script>
-<script type="text/javascript">
-function disable(el) {
-    var oldLabel = el.value;
-    el.value = "Please Wait...";
-    el.disabled = true;
-}
-</script>
+	<script src="{{ url_for('views.themes', path='js/style.js') }}"></script>
 {% endblock %}

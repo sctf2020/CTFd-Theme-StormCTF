@@ -1,38 +1,43 @@
-function updatescores () {
-  $.get(script_root + '/scores', function( data ) {
-    var teams = $.parseJSON(JSON.stringify(data));
-    var table = $('#scoreboard tbody');
-    table.empty();
-    for (var i = 0; i < teams['standings'].length; i++) {
-        var row="<tr>\n" +
-            "<td class=\"uk-text-center\">{0}</td>".format(i + 1) +
-            "<td class=\"uk-text-center\"><a href=\"{0}/team/{1}\">{2}</a></td>".format(script_root, teams['standings'][i].id, htmlentities(teams['standings'][i].team)) +
-            "<td class=\"uk-text-center\">{0}</td>".format(teams['standings'][i].score) +
-            "</tr>";
-        table.append(row);
-    }
-  });
+function updatescores() {
+    $.get(script_root + '/api/v1/scoreboard', function(response) {
+        var teams = response.data;
+        var table = $('#scoreboard tbody');
+        table.empty();
+        for (var i = 0; i < teams.length; i++) {
+            var row =
+                "<tr>\n" +
+                '<th scope="row" class="uk-text-center">{0}</th>'.format(teams[i]['pos']) +
+                '<td><a href="{0}/team/{1}">{2}</a></td>'.format(
+                    script_root,
+                    teams[i]['id'],
+                    htmlentities(teams[i]['name'])
+                ) +
+                "<td>{0}</td>".format(teams[i]['score']) +
+                "</tr>";
+            table.append(row);
+        }
+    });
 }
 
-function cumulativesum (arr) {
+function cumulativesum(arr) {
     var result = arr.concat();
-    for (var i = 0; i < arr.length; i++){
-        result[i] = arr.slice(0, i + 1).reduce(function(p, i){ return p + i; });
+    for (var i = 0; i < arr.length; i++) {
+        result[i] = arr.slice(0, i + 1).reduce(function(p, i) { return p + i; });
     }
     return result
 }
 
-function UTCtoDate(utc){
+function UTCtoDate(utc) {
     var d = new Date(0);
     d.setUTCSeconds(utc);
     return d;
 }
 
-function scoregraph () {
-    $.get(script_root + '/top/10', function( data ) {
-        var places = $.parseJSON(JSON.stringify(data));
-        places = places['places'];
-        if (Object.keys(places).length === 0 ){
+function scoregraph() {
+    $.get(script_root + '/api/v1/scoreboard/top/10', function(response) {
+        var places = response.data;
+
+        if (Object.keys(places).length === 0) {
             // Replace spinner
             $('#score-graph').html(
                 '<div class="uk-text-center"><h2>No solves yet</h2></div>'
@@ -42,12 +47,12 @@ function scoregraph () {
 
         var teams = Object.keys(places);
         var traces = [];
-        for(var i = 0; i < teams.length; i++){
+        for (var i = 0; i < teams.length; i++) {
             var team_score = [];
             var times = [];
-            for(var j = 0; j < places[teams[i]]['solves'].length; j++){
+            for (var j = 0; j < places[teams[i]]['solves'].length; j++) {
                 team_score.push(places[teams[i]]['solves'][j].value);
-                var date = moment(places[teams[i]]['solves'][j].time * 1000);
+                var date = moment(places[teams[i]]['solves'][j].date);
                 times.push(date.toDate());
             }
             team_score = cumulativesum(team_score);
@@ -68,7 +73,7 @@ function scoregraph () {
 
         traces.sort(function(a, b) {
             var scorediff = b['y'][b['y'].length - 1] - a['y'][a['y'].length - 1];
-            if(!scorediff) {
+            if (!scorediff) {
                 return a['x'][a['x'].length - 1] - b['x'][b['x'].length - 1];
             }
             return scorediff;
@@ -113,25 +118,23 @@ function scoregraph () {
                 }
             }
         };
-        console.log(traces);
 
         $('#score-graph').empty(); // Remove spinners
+        document.getElementById('score-graph').fn = 'CTFd_scoreboard_' + (new Date).toISOString().slice(0, 19);
         Plotly.newPlot('score-graph', traces, layout, {
-             //displayModeBar: false,
-
+            // displayModeBar: false,
             displaylogo: false
         });
     });
 }
 
-function update(){
-  updatescores();
-  scoregraph();
+function update() {
+    updatescores();
+    scoregraph();
 }
-
-setInterval(update, 300000); // Update scores every 5 minutes
+setInterval(update, 300000); // Update every 30 min
 scoregraph();
 
-window.onresize = function () {
+window.onresize = function() {
     Plotly.Plots.resize(document.getElementById('score-graph'));
 };

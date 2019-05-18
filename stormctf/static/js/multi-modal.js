@@ -54,11 +54,11 @@
     $.fn.multiModal = Plugin;
     $.fn.multiModal.Constructor = MultiModal;
 
-    $(document).on('show.uk.modal', function(e) {
+    $(document).on('show.bs.modal', function(e) {
         $(document).multiModal('show', e.target);
     });
 
-    $(document).on('hidden.uk.modal', function(e) {
+    $(document).on('hidden.bs.modal', function(e) {
         $(document).multiModal('hidden', e.target);
     });
 }(jQuery, window));

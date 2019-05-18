@@ -1,4 +1,7 @@
-{% extends "base.html" %} {% block stylesheets %} {% endblock %} {% block content %}
+{% extends "base.html" %}
+{% block stylesheets %}
+{% endblock %}
+{% block content %}
 <div class="uk-section uk-section-muted uk-section-large">
     <div class="uk-container uk-container-medium uk-text-center">
         <h1 class='uk-heading-primary'>Login</h1>
@@ -19,20 +22,28 @@
 </div>
 {% endif %}
 <div class="uk-section uk-section-secondary">
+    <!-- Hiding MLC Login. Not Supported. -->
+    <!-- <div class="uk-container uk-container-small uk-margin">
+        <div class="uk-flex uk-flex-center">
+            <div>
+                <a class="uk-button uk-button-large uk-button-default" href="{{ url_for('auth.oauth_login') }}">Login with Major League Cyber</a>
+            </div>
+        </div>
+    </div> -->
     <div class="uk-container uk-container-small">
         <div class="uk-flex uk-flex-center">
-            <form onsubmit="disable(submit)" action="" method="POST" novalidate>
+            <form method="POST" onsubmit="disable(submit)" accept-charset="utf-8" autocomplete="off" role="form">
                 <fieldset class="uk-fieldset">
                     <div class="uk-margin">
                         <div class="uk-inline uk-width-large@s">
                             <span class="uk-form-icon" uk-icon="icon: user"></span>
-                            <input autofocus="true" class="uk-input uk-form-large " id="name" name="name" placeholder="Team Name or Email" required type="text" value="">
+                            <input autofocus="true" class="uk-input uk-form-large " id="name-input" name="name" placeholder="User Name or Email" required type="text" value="">
                         </div>
                     </div>
                     <div class="uk-margin">
                         <div class="uk-inline uk-width-large@s">
                             <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                            <input class="uk-input uk-form-large" id="password" name="password" placeholder="Password" required type="password" value="">
+                            <input class="uk-input uk-form-large" id="password-input" name="password" placeholder="Password" required type="password" value="">
                         </div>
                     </div>
                     <div class="uk-margin uk-text-center">
@@ -43,15 +54,17 @@
             </form>
         </div>
         <div class="uk-margin uk-text-center">
-            <a class="uk-link" href="{{ request.script_root }}/reset_password">Forgot your password?</a>
+            <a class="uk-link" href="{{ url_for('auth.reset_password') }}">Forgot your password?</a>
         </div>
     </div>
 </div>
-{% endblock %} {% block scripts %}
+{% endblock %}
+{% block scripts %}
 <script type="text/javascript">
 function disable(el) {
     var oldLabel = el.value;
     el.value = "Logging In...";
     el.disabled = true;
 }
-</script> {% endblock %}
+</script>
+{% endblock %}

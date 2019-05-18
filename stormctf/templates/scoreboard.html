@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block stylesheets %} {% endblock %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 <div class="uk-section uk-section-muted uk-section-large">
     <div class="uk-container uk-container-medium uk-text-center">
         <h1 class='uk-heading-primary'>Scoreboard</h1>
@@ -17,7 +18,8 @@
         </div>
     </div>
 </div>
-{% else %} {% if score_frozen %}
+{% else %}
+{% if score_frozen %}
 <div class="uk-section-primary">
     <div class="uk-container uk-container-medium uk-text-center">
         <div id='errors' class='uk-margin-top'>
@@ -25,7 +27,8 @@
         </div>
     </div>
 </div>
-{% endif %} {% endif %}
+{% endif %}
+{% endif %}
 <div class="uk-section uk-section-secondary">
     <div class="uk-container uk-container-medium uk-text-center">
         <div class='uk-card uk-card-secondary uk-card-hover uk-card-body uk-width-1-1@m'>
@@ -35,7 +38,7 @@
                 </div>
             </div>
         </div>
-        {% if teams %}
+        {% if standings %}
         <div id="scoreboard" class='uk-margin'>
             <table class='uk-table uk-table-large uk-table-hover uk-table-striped'>
                 <thead>
@@ -46,20 +49,37 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for team in teams %}
+                    {% for standing in standings %}
                     <tr>
-                        <td class="uk-text-center">{{ loop.index }}</td>
-                        <td><a href="{{ request.script_root }}/team/{{ team.teamid }}">{{ team.name }}</a></td>
-                        <td>{{ team.score }}</td>
+                        <th scope="row" class="uk-text-center">{{ loop.index }}</th>
+                        <td>
+                            <a href="{{ generate_account_url(standing.account_id) }}">
+                                {{ standing.name | truncate(50) }}
+                                {% if standing.oauth_id %}
+                                {% if get_config('user_mode') == 'teams' %}
+                                <a href="https://majorleaguecyber.org/t/{{ standing.name }}">
+                                    <span class="badge badge-primary">Official</span>
+                                </a>
+                                {% elif get_config('user_mode') == 'users' %}
+                                <a href="https://majorleaguecyber.org/u/{{ standing.name }}">
+                                    <span class="badge badge-primary">Official</span>
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td>{{ standing.score }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    {% endif %}
 </div>
-{% endif %} {% endblock %} {% block scripts %}
-<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/vendor/plotly.min.js"></script>
-<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/utils.js"></script>
-<script src="{{ request.script_root }}/themes/{{ ctf_theme() }}/static/js/scoreboard.js"></script>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('views.themes', path='js/vendor/plotly.min.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/utils.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/scoreboard.js') }}"></script>
 {% endblock %}
