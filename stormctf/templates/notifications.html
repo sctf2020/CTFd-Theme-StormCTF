@@ -9,6 +9,7 @@
 </div>
 <div class="uk-section uk-section-secondary">
     <div class="uk-container uk-container-large">
+        {% if notifications %}
         {% for notification in notifications %}
         <div class="uk-card uk-card-default uk-card-hover">
             <div class="uk-card-body">
@@ -22,6 +23,9 @@
             </div>
         </div>
         {% endfor %}
+        {% else %}
+        <h1 class='uk-text-center'>No Notifications Yet</h1>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
