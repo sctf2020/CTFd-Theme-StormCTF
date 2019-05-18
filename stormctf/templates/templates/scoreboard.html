@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="uk-section uk-section-muted uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <h1 class='uk-heading-primary'>Scoreboard</h1>
+    </div>
+</div>
+{% if errors %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for error in errors %}
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ error }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+{% if score_frozen %}
+<div class="uk-section-primary">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            <h1 class="uk-text-center">Scoreboard has been frozen.</h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div class='uk-card uk-card-secondary uk-card-hover uk-card-body uk-width-1-1@m'>
+            <div id="score-graph" class='uk-margin-top'>
+                <div class="uk-text-center">
+                    <div uk-spinner="ratio: 10"></div>
+                </div>
+            </div>
+        </div>
+        {% if standings %}
+        <div id="scoreboard" class='uk-margin'>
+            <table class='uk-table uk-table-large uk-table-hover uk-table-striped'>
+                <thead>
+                    <tr>
+                        <td class='uk-text-center uk-text-large uk-table-shrink'>Place</td>
+                        <td class='uk-text-center uk-text-large'>Team</td>
+                        <td class='uk-text-center uk-text-large'>Score</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for standing in standings %}
+                    <tr>
+                        <th scope="row" class="uk-text-center">{{ loop.index }}</th>
+                        <td>
+                            <a href="{{ generate_account_url(standing.account_id) }}">
+                                {{ standing.name | truncate(50) }}
+                                {% if standing.oauth_id %}
+                                {% if get_config('user_mode') == 'teams' %}
+                                <a href="https://majorleaguecyber.org/t/{{ standing.name }}">
+                                    <span class="badge badge-primary">Official</span>
+                                </a>
+                                {% elif get_config('user_mode') == 'users' %}
+                                <a href="https://majorleaguecyber.org/u/{{ standing.name }}">
+                                    <span class="badge badge-primary">Official</span>
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                            </a>
+                        </td>
+                        <td>{{ standing.score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('views.themes', path='js/vendor/plotly.min.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/utils.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/scoreboard.js') }}"></script>
+{% endblock %}

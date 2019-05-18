@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+{% endblock %}
+{% block content %}
+<div class="uk-section uk-section-muted uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <h1 class='uk-heading-primary'>Settings</h1>
+    </div>
+</div>
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-small">
+        {% if confirm_email %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a> Your email address isn't confirmed! Please check your email to confirm your email address.
+            <br>
+            <br> To have the confirmation email resent please <a href="{{ url_for('auth.confirm') }}">click
+                here.</a>
+        </div>
+        {% endif %}
+        <div class="uk-flex uk-flex-center">
+            <form id="user-settings-form" method="post" onsubmit="disable(submit)" accept-charset="utf-8" autocomplete="off" role="form" class='uk-form-stacked'>
+                <fieldset class="uk-fieldset">
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="name">
+                            User Name
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="name-input" name="name" placeholder="User Name" type="text" value="{{name}}">
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="email">
+                            Email Address
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="email-input" name="email" placeholder="Email" type="text" value="{{email}}">
+                    </div>
+                    <hr>
+                    <div class="uk-margin">
+                        <input class="uk-input uk-form-large uk-width-large@s" id="confirm-input" name="confirm" placeholder="Current Password" type="password" value="">
+                    </div>
+                    <div class="uk-margin">
+                        <input class="uk-input uk-form-large uk-width-large@s" id="password-input" name="password" placeholder="New Password" type="password" value="">
+                    </div>
+                    <hr>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="affiliation-input">
+                            Affiliation
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="affiliation" name="affiliation" placeholder="Affiliation" type="text" value="{% if affiliation %}{{affiliation}}{% endif %}">
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="country-input">
+                            Website
+                        </label>
+                        <input class="uk-input uk-form-large uk-width-large@s" id="website-input" name="website" placeholder="Website" type="url" value="{% if website %}{{website}}{% endif %}">
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="country-input">
+                            Country
+                        </label>
+                        <select class="uk-select" id="country-input" name="country">
+                            <option value=""></option>
+                            {% set countries = get_countries() %}
+                            {% for country_code in countries.keys() %}
+                            <option value="{{ country_code }}" {% if country==country_code %}selected{% endif %}>{{ countries[country_code] }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="uk-margin" id="results">
+                        </div>
+                        <div class="uk-margin uk-text-center">
+                            <button type="submit" id="submit" tabindex="5" class="uk-button uk-button-large uk-button-primary uk-width-medium uk-margin">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('views.themes', path='js/style.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/settings.js') }}"></script>
+{% endblock %}

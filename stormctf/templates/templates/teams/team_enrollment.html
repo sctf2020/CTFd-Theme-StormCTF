@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+{% endblock %}
+{% block content %}
+<div class="uk-section-default">
+    <div class="uk-section uk-section-xlarge uk-light uk-background-cover" style="background-image: url({{ url_for('views.themes', path='img/team.png') }})">
+        <div class="uk-container uk-container-medium uk-text-center">
+            <h1 class='uk-heading-primary'>Team</h1>
+        </div>
+    </div>
+</div>
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-small">
+        <div>
+            <h2 class='uk-text-center'>Welcome to {{ get_ctf_name() }}!</h2>
+            <p class='uk-text-center'>In order to participate you must either join or create a team. Check with your teammates before you continue!</p>
+        </div>
+        <div class="uk-flex uk-flex-center">
+       	    <!-- Hiding MLC Login. Not Supported. -->
+            <!-- <div class="uk-margin-right">
+                <a class="uk-button uk-button-large uk-button-primary" href="{{ url_for('auth.oauth_login') }}">Play with Official Team</a>
+            </div> -->
+            <div>
+                <a class="uk-button uk-button-large uk-button-secondary" href="{{ url_for('teams.join') }}">Join Team</a>
+            </div>
+            <div class="uk-margin-left">
+                <a class="uk-button uk-button-large uk-button-secondary" href="{{ url_for('teams.new') }}">Create Team</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<!-- <script src="{{ url_for('views.themes', path='js/vendor/plotly.min.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/utils.js') }}"></script> -->
+{% if solves %}
+<!-- <script src="{{ url_for('views.themes', path='js/team.js') }}"></script>
+ -->{% endif %}
+{% endblock %}

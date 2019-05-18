@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+{% endblock %}
+{% block content %}
+<div id="team-edit-modal" uk-modal class='uk-modal'>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header uk-background-muted">
+            <h2 class="uk-modal-title">Edit Team</h2>
+        </div>
+        <div class="uk-modal-body uk-background-secondary">
+            <div class="uk-flex uk-flex-center">
+                <form id="team-info-form" method="POST" onsubmit="disable(submit)" class='uk-form-stacked'>
+                    <fieldset class="uk-fieldset">
+                        <div class="uk-margin">
+                            <input placeholder='Team Name' type="text" class="uk-input uk-form-large uk-width-large@s" name="name" id="name" {% if team is defined and team.name %}value="{{ team.name }}" {% endif %} required />
+                        </div>
+                        <div class="uk-margin">
+                            <input placeholder='Current Password' type="password" class="uk-input uk-form-large uk-width-large@s" name="confirm" id="confirm" />
+                        </div>
+                        <div class="uk-margin">
+                            <input placeholder='Password' type="password" class="uk-input uk-form-large uk-width-large@s" name="password" id="password" />
+                        </div>
+                        <div class="uk-margin">
+                            <input placeholder='Website' type="url" class="uk-input uk-form-large uk-width-large@s" name="website" id="website" {% if team is defined and team.website %}value="{{ team.website }}" {% endif %} />
+                        </div>
+                        <div class="uk-margin">
+                            <input  placeholder='Affiliation' type="text" class="uk-input uk-form-large uk-width-large@s" name="affiliation" id="affiliation" {% if team is defined and team.affiliation %}value="{{ team.affiliation }}" {% endif %} />
+                        </div>
+                        <div class="uk-margin">
+                            <label class="uk-form-label uk-text-center" for="affiliation">Country</label>
+                            <select class="uk-select" id="country-input" name="country">
+                                <option></option>
+                                {% set countries = get_countries() %}
+                                {% for country_code in countries.keys() %}
+                                <option value="{{ country_code }}" {% if team is defined and team.country==country_code %}selected{% endif %}>
+                                    {{ countries[country_code] }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="uk-margin" id="results">
+                        </div>
+                        <div class="uk-margin uk-text-center">
+                            <button id="update-team" type="submit" class="uk-button uk-button-large uk-button-primary uk-width-medium uk-margin">
+                                Submit
+                            </button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="team-captain-modal" uk-modal class='uk-modal'>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-default" type="button" uk-close></button>
+        <div class="uk-modal-header uk-background-muted">
+            <h2 class="uk-modal-title">Choose Captain</h2>
+        </div>
+        <div class="uk-modal-body uk-background-secondary">
+            <form id="team-captain-form" method="POST" onsubmit="disable(submit)" class='uk-form-stacked'>
+                <fieldset class="uk-fieldset">
+                    <input type="hidden" name="id">
+                    <div class="uk-margin">
+                        <label class="uk-form-label uk-text-center" for="captain">Team Captain</label>
+                        <select class="uk-select" id="captain" name="captain_id">
+                            {% if team is defined %}
+                            <option value="{{ team.captain.id }}">{{ team.captain.name }}</option>
+                            {% for member in team.members %}
+                            {% if member.id != team.captain.id %}
+                            <option value="{{ member.id }}">{{ member.name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class='uk-margin' id="results">
+                    </div>
+                    <div class="uk-margin uk-text-center">
+                        <button type="submit" class="uk-button uk-button-large uk-button-primary uk-width-medium uk-margin">
+                            Submit
+                        </button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="uk-section uk-section-muted uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <h1 id="team-id" team-id="{{ team.id }}" class='uk-heading-primary uk-margin-small'>{{ team.name }}</h1>
+        {% if team.oauth_id %}
+        <a href="https://majorleaguecyber.org/u/{{ team.name }}">
+            <h3><span class="badge badge-primary">Official</span></h3>
+        </a>
+        {% endif %}
+        {% if team.affiliation %}
+        <h1><span class="uk-label uk-text-large">{{ team.affiliation }}</span></h1>
+        {% endif %}
+        <div>
+            <h2 id="team-place" class="uk-text-center">
+                {# This intentionally hides the team's place because this can be their internal profile. #}
+                {# Public page hiding is done at the route level #}
+                {% if scores_visible() %}
+                {{ team.place }}
+                <small>place</small>
+                {% endif %}
+            </h2>
+            <h2 id="team-score" class="uk-text-center">
+                {% if score %}
+                {{ team.score }}
+                <small>points</small>
+                {% endif %}
+            </h2>
+            <div class="uk-flex uk-flex-center">
+                <div class='uk-margin-right'>
+                    <a class="edit-team">
+                        {% if team.captain_id == user.id %}
+                        <span uk-toggle="target: #team-edit-modal" uk-tooltip="title: Edit Team" uk-icon="icon: cog; ratio: 3"></span></div>
+                <div>
+                    <a class="edit-captain">
+                        <span uk-toggle="target: #team-captain-modal" uk-tooltip="title: Choose Captain" uk-icon="icon: user; ratio: 3"></span>
+                    </a>
+                    {% else %}
+                    <span uk-tooltip="title: Only team captains can edit team information" style='cursor: not-allowed;' class='uk-text-muted' uk-icon="icon: cog; ratio: 3" uk-disabled></span></div>
+                <div>
+                    <a class="edit-captain">
+                        <span uk-tooltip="title: Only team captains can choose a new captain" style='cursor: not-allowed;' class='uk-text-muted' uk-icon="icon: user; ratio: 3" uk-disabled></span>
+                    </a>
+                    {% endif %}
+                </div>
+                </a>
+                
+            </div>
+            {% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
+            <div class='uk-margin-top uk-margin-remove-bottom'>
+                <a href="{{ team.website }}" target="_blank" class='uk-link uk-text-meta'>{{ team.website }}</a>
+            </div>
+                {% endif %}
+        </div>
+    </div>
+</div>
+{% if errors %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for error in errors %}
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ error }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %} {% if score_frozen %}
+<div class="uk-section-primary">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            <h1 class="uk-text-center">Scoreboard has been frozen.</h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="uk-section uk-section-secondary uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <h2>Members</h2>
+        <table class="uk-table uk-table-striped uk-table-hover">
+            <thead>
+                <tr>
+                    <td class='uk-text-center uk-text-large'>User Name</td>
+                    <td class='uk-text-center uk-text-large'>Score</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in team.members %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('users.public', user_id=member.id) }}">
+                            {{ member.name }}
+                        </a>
+                        {% if team.captain_id == member.id %}
+                        <span class="uk-label">Captain</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ member.score }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if solves %}
+        <hr>
+        <h2>Details</h2>
+        <div class="uk-grid-medium uk-child-width-expand@s uk-text-center" uk-grid>
+            <div>
+                <div class="uk-card uk-card-hover uk-card-default uk-card-body">
+                    <div id="keys-pie-graph" class="w-50 mr-0 pr-0 float-left d-none d-md-block d-lg-block">
+                        <div class="uk-text-center">
+                            <div uk-spinner="ratio: 10"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+                    <div id="categories-pie-graph" class="w-50 mr-0 pr-0 float-left d-none d-md-block d-lg-block">
+                        <div class="uk-text-center">
+                            <div uk-spinner="ratio: 10"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br class="clearfix">
+        <div class='uk-card uk-card-secondary uk-card-hover uk-card-body uk-width-1-1@m'>
+            <div id="score-graph" class='uk-margin-top'>
+                <div class="uk-text-center">
+                    <div uk-spinner="ratio: 10"></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="uk-section uk-section-secondary uk-margin-remove-top">
+    <div class="uk-container uk-container-medium">
+        {% if solves %}
+        {% if awards %}
+        <h2 class='uk-text-center'>Awards</h2>
+        <div class="uk-grid-medium uk-flex-center uk-grid-match uk-child-width-expand@s" uk-grid>
+            {% for award in awards %}
+            <div class='uk-width-1-4@m '>
+                <div class="uk-card uk-card-hover uk-card-default">
+                    <div class="uk-card-header">
+                        <h3 class="uk-card-title uk-margin-remove-bottom">{{ award.name }} <br /> {{ award.value }} Points</h3>
+                    </div>
+                    <div class="uk-card-body">
+                        {% if award.category %}
+                        <p>Award Category: {{ award.category }}</p>{% else %}
+                        <p>Award Category: None</p>{% endif %} {% if award.description %}
+                        <p>Description: {{ award.description }}</p>{% else %}
+                        <p>Description: None</p>{% endif %} {% if award.icon %}{{award.icon}}{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <h2 class='uk-text-center'>Solves</h2>
+        <table class="uk-table uk-table-striped uk-table-hover">
+            <thead>
+                <tr>
+                    <td class='uk-text-center uk-text-large'>Challenge</td>
+                    <td class='uk-text-center uk-text-large'>Category</td>
+                    <td class='uk-text-center uk-text-large'>Value</td>
+                    <td class='uk-text-center uk-text-large'>Time</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solve in solves %}
+                <tr>
+                    <td class="uk-text-center"><a href="{{ request.script_root }}/challenges#{{ solve.challenge.name }}">{{ solve.challenge.name }}</a></td>
+                    <td class="uk-text-center">{{ solve.challenge.category }}</td>
+                    <td class="uk-text-center">{{ solve.challenge.value }}</td>
+                    <td class="uk-text-center">
+                        <script>
+                        document.write(moment("{{ solve.date| isoformat }}").local().format('MMMM Do, h:mm:ss A'))
+                        </script>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="uk-text-center">
+            <h2>No solves yet</h2>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+function disable(el) {
+    var oldLabel = el.value;
+    el.value = "Logging In...";
+    el.disabled = true;
+}
+</script>
+<script>
+var team_id = {{ team.id }};
+var team_name = {{ team.name | tojson }};
+var team_self = {{
+        (user.team_id == team.id) | tojson }};
+var team_captain = {{
+        (user.id == team.captain_id) | tojson }};
+var team_account_id = team_self ? "me" : team_id;
+</script>
+<script src="{{ url_for('views.themes', path='js/vendor/plotly.min.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/utils.js') }}"></script>
+{% if solves %}
+<script src="{{ url_for('views.themes', path='js/team.js') }}"></script>
+{% endif %}
+<script>
+// if (team_captain) {
+//     $('.edit-team').click(function() {
+//         $('#team-edit-modal').modal();
+//     });
+
+//     $('.edit-captain').click(function() {
+//         $('#team-captain-modal').modal();
+//     });
+// }
+
+var form = $('#team-info-form');
+form.submit(function(e) {
+    e.preventDefault();
+    $('#results').empty();
+    var params = $(this).serializeJSON();
+    var method = 'PATCH';
+    var url = '/api/v1/teams/me';
+    CTFd.fetch(url, {
+        method: method,
+        credentials: 'same-origin',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+    }).then(function(response) {
+        if (response.status === 400) {
+            response.json().then(function(object) {
+                if (!object.success) {
+                    Object.keys(object.errors).map(function(error) {
+                        var i = form.find('input[name={0}]'.format(error));
+                        var input = $(i);
+                        input.addClass('uk-form-danger');
+                        input.removeClass('uk-form-success');
+                        var error_msg = object.errors[error];
+                        var alert = error_template.format(error_msg);
+                        console.log(error_template);
+                        $('#results').append(
+                            alert
+                        );
+                    });
+                }
+            });
+        } else if (response.status === 200) {
+            response.json().then(function(object) {
+                if (object.success) {
+                    window.location.reload();
+                }
+            });
+        }
+    });
+});
+
+$('#team-captain-form').submit(function(e) {
+    e.preventDefault();
+    var params = $('#team-captain-form').serializeJSON(true);
+
+    CTFd.fetch('/api/v1/teams/me', {
+        method: 'PATCH',
+        credentials: 'same-origin',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(params)
+    }).then(function(response) {
+        return response.json();
+    }).then(function(response) {
+        if (response.success) {
+            window.location.reload();
+        } else {
+            $('#team-captain-form > #results').empty();
+            Object.keys(response.errors).forEach(function(key, index) {
+                $('#team-captain-form > #results').append(
+                    ezbadge({
+                        type: 'error',
+                        body: response.errors[key]
+                    })
+                );
+                var i = $('#team-captain-form').find('select[name={0}]'.format(key));
+                var input = $(i);
+                input.addClass('uk-form-danger');
+                input.removeClass('uk-form-success');
+            });
+        }
+    })
+});
+</script>
+{% endblock %}

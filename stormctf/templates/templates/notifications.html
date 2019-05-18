@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="uk-section-default">
+    <div class="uk-section uk-section-xlarge uk-light uk-background-cover" style="background-image: url({{ url_for('views.themes', path='img/notifications.png') }})">
+        <div class="uk-container uk-container-medium uk-text-center">
+            <h1 class='uk-heading-primary'>Notifications</h1>
+        </div>
+    </div>
+</div>
+<div class="uk-section uk-section-secondary">
+    <div class="uk-container uk-container-large">
+        {% for notification in notifications %}
+        <div class="uk-card uk-card-default uk-card-hover">
+            <div class="uk-card-body">
+                <h2 class="uk-card-title">{{ notification.title }}</h2>
+                <blockquote>
+                    <p>{{ notification.content | safe }}</p>
+                    <small class="uk-text-muted uk-text-baseline"><script>
+                        document.write(moment("{{ notification.date|isoformat }}").local().format('MMMM Do, h:mm:ss A'))
+                        </script></small>
+                </blockquote>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<!-- <script src="{{ url_for('views.themes', path='js/vendor/plotly.min.js') }}"></script> -->
+<script src="{{ url_for('views.themes', path='js/utils.js') }}"></script>
+{% endblock %}

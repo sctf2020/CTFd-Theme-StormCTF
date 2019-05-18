@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block stylesheets %}
+{% endblock %}
+{% block content %}
+<div class="uk-section uk-section-muted uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <h1 id="user-id" user-id="{{ user.id }}" class='uk-heading-primary uk-margin-small'>{{ user.name }}</h1>
+        {% if user.oauth_id %}
+        <a href="https://majorleaguecyber.org/u/{{ user.name }}">
+            <h3><span class="badge badge-primary">Official</span></h3>
+        </a>
+        {% endif %}
+        {% if user.affiliation %}
+        <h1><span class="uk-label uk-text-large">{{ user.affiliation }}</span></h1>
+        {% endif %}
+        <div>
+            <h2 id="user-place" class="uk-text-center">
+                {# This intentionally hides the user's place because this can be their internal profile. #}
+                {# Public page hiding is done at the route level #}
+                {% if scores_visible() %}
+                {{ user.place }}
+                <small>place</small>
+                {% endif %}
+            </h2>
+            <h2 id="user-score" class="uk-text-center">
+                {% if score %}
+                {{ user.score }}
+                <small>points</small>
+                {% endif %}
+            </h2>
+        </div>
+        <div>
+            {% if user.website and (user.website.startswith('http://') or user.website.startswith('https://')) %}
+            <a href="{{ user.website }}" target="_blank" class='uk-link uk-text-meta'>{{ user.website }}</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if errors %}
+<div class="uk-section-primary uk-preserve-color">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            {% for error in errors %}
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <h3 class="uk-text-center">{{ error }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %} {% if score_frozen %}
+<div class="uk-section-primary">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <div id='errors' class='uk-margin-top'>
+            <h1 class="uk-text-center">Scoreboard has been frozen.</h1>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="uk-section uk-section-secondary uk-section-large">
+    <div class="uk-container uk-container-medium uk-text-center">
+        <br>
+        {% set solves = user.solves %}
+        {% set awards = user.awards %}
+        {% if solves %}
+        <div class="uk-grid-medium uk-child-width-expand@s uk-text-center" uk-grid>
+            <div>
+                <div class="uk-card uk-card-hover uk-card-default uk-card-body">
+                    <div id="keys-pie-graph" class="w-50 mr-0 pr-0 float-left d-none d-md-block d-lg-block">
+                        <div class="uk-text-center">
+                            <div uk-spinner="ratio: 10"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+                    <div id="categories-pie-graph" class="w-50 mr-0 pr-0 float-left d-none d-md-block d-lg-block">
+                        <div class="uk-text-center">
+                            <div uk-spinner="ratio: 10"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br class="clearfix">
+        <div class='uk-card uk-card-secondary uk-card-hover uk-card-body uk-width-1-1@m'>
+            <div id="score-graph" class='uk-margin-top'>
+                <div class="uk-text-center">
+                    <div uk-spinner="ratio: 10"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="uk-section uk-section-secondary uk-margin-remove-top">
+    <div class="uk-container uk-container-medium">
+        {% if solves %}
+        {% if awards %}
+        <h2 class='uk-text-center'>Awards</h2>
+        <div class="uk-grid-medium uk-flex-center uk-grid-match uk-child-width-expand@s" uk-grid>
+            {% for award in awards %}
+            <div class='uk-width-1-4@m '>
+                <div class="uk-card uk-card-hover uk-card-default">
+                    <div class="uk-card-header">
+                        <h3 class="uk-card-title uk-margin-remove-bottom">{{ award.name }} <br /> {{ award.value }} Points</h3>
+                    </div>
+                    <div class="uk-card-body">
+                        {% if award.category %}
+                        <p>Award Category: {{ award.category }}</p>{% else %}
+                        <p>Award Category: None</p>{% endif %} {% if award.description %}
+                        <p>Description: {{ award.description }}</p>{% else %}
+                        <p>Description: None</p>{% endif %} {% if award.icon %}{{award.icon}}{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <h2 class='uk-text-center'>Solves</h2>
+        <table class="uk-table uk-table-striped uk-table-hover">
+            <thead>
+                <tr>
+                    <td class='uk-text-center uk-text-large'>Challenge</td>
+                    <td class='uk-text-center uk-text-large'>Category</td>
+                    <td class='uk-text-center uk-text-large'>Value</td>
+                    <td class='uk-text-center uk-text-large'>Time</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solve in solves %}
+                <tr>
+                    <td class="uk-text-center"><a href="{{ request.script_root }}/challenges#{{ solve.challenge.name }}">{{ solve.challenge.name }}</a></td>
+                    <td class="uk-text-center">{{ solve.challenge.category }}</td>
+                    <td class="uk-text-center">{{ solve.challenge.value }}</td>
+                    <td class="uk-text-center">
+                        <script>
+                        document.write(moment("{{ solve.date|isoformat }}").local().format('MMMM Do, h:mm:ss A'))
+                        </script>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="uk-text-center">
+            <h2>No solves yet</h2>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+var user_id = {{ user.id }};
+var user_name = {{ user.name | tojson }};
+var team_id = {{ user.team_id | tojson }};
+var user_self = {{(user.id == id) | tojson }};
+var user_account_id = user_self ? "me" : user_id;
+</script>
+<script src="{{ url_for('views.themes', path='js/vendor/plotly.min.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/utils.js') }}"></script>
+<script src="{{ url_for('views.themes', path='js/user.js') }}"></script>
+{% endblock %}
