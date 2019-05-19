@@ -18,8 +18,10 @@
                 {# This intentionally hides the team's place because this can be their internal profile. #}
                 {# Public page hiding is done at the route level #}
                 {% if scores_visible() %}
+                {% if team.place != 0 %}
                 {{ team.place }}
                 <small>place</small>
+                {% endif %}
                 {% endif %}
             </h2>
             <h2 id="team-score" class="uk-text-center">

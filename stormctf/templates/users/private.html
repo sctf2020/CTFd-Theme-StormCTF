@@ -18,8 +18,10 @@
                 {# This intentionally hides the user's place because this can be their internal profile. #}
                 {# Public page hiding is done at the route level #}
                 {% if scores_visible() %}
+                {% if user.place != 0 %}
                 {{ user.place }}
                 <small>place</small>
+                {% endif %}
                 {% endif %}
             </h2>
             <h2 id="user-score" class="uk-text-center">
